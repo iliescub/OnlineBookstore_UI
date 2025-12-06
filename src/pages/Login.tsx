@@ -11,11 +11,6 @@ const Login: React.FC = () => {
   const { login, signup } = useAuth();
   const navigate = useNavigate();
 
-  const demoCredentials = [
-    { label: 'Admin', email: 'admin@bookstore.com', password: 'admin123' },
-    { label: 'User', email: 'user@example.com', password: 'user123' },
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -76,26 +71,6 @@ const Login: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Demo Credentials */}
-          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Demo Accounts</h3>
-            <div className="space-y-2">
-              {demoCredentials.map((cred) => (
-                <div key={cred.label} className="text-sm">
-                  <span className="text-purple-400 font-medium">{cred.label}:</span>
-                  <div className="flex gap-2 mt-1">
-                    <code className="bg-slate-900 px-2 py-1 rounded text-xs flex-1">
-                      {cred.email}
-                    </code>
-                    <code className="bg-slate-900 px-2 py-1 rounded text-xs">
-                      {cred.password}
-                    </code>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
