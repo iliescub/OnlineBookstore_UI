@@ -48,6 +48,20 @@ const Header: React.FC = () => {
             >
               Home
             </NavLink>
+            {isAuthenticated && (
+              <NavLink
+                to="/orders"
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-lg font-medium transition-all ${
+                    isActive
+                      ? 'bg-purple-600 text-white'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  }`
+                }
+              >
+                Orders
+              </NavLink>
+            )}
             {isAdmin && (
               <NavLink
                 to="/admin"
@@ -103,7 +117,6 @@ const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  onBlur={() => setTimeout(() => setShowUserMenu(false), 200)}
                   className="flex items-center gap-2 btn btn-ghost"
                 >
                   <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white font-semibold">
@@ -113,25 +126,34 @@ const Header: React.FC = () => {
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 card animate-fade-in">
-                    <div className="p-2">
-                      <div className="px-3 py-2 text-sm text-slate-400">
-                        {currentUser.email}
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowUserMenu(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 card animate-fade-in z-20">
+                      <div className="p-2">
+                        <div className="px-3 py-2 text-sm text-slate-400">
+                          {currentUser.email}
+                        </div>
+                        <div className="px-3 py-2 text-xs">
+                          <span className={`badge ${isAdmin ? 'badge-warning' : 'badge-success'}`}>
+                            {isAdmin ? 'Admin' : 'User'}
+                          </span>
+                        </div>
+                        <hr className="my-2 border-slate-800" />
+                        <button
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            logout();
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                        >
+                          Logout
+                        </button>
                       </div>
-                      <div className="px-3 py-2 text-xs">
-                        <span className={`badge ${isAdmin ? 'badge-warning' : 'badge-success'}`}>
-                          {isAdmin ? 'Admin' : 'User'}
-                        </span>
-                      </div>
-                      <hr className="my-2 border-slate-800" />
-                      <button
-                        onClick={logout}
-                        className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
-                      >
-                        Logout
-                      </button>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
             ) : (

@@ -8,6 +8,9 @@ const axiosInstance = axios.create({
   },
 });
 
+// Track if we're already handling a logout to prevent multiple redirects
+let isHandlingLogout = false;
+
 // Request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -26,10 +29,25 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Only handle 401 if we're not already handling a logout
+    if (error.response?.status === 401 && !isHandlingLogout) {
+      isHandlingLogout = true;
+
+      // Clear auth data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+
+      // Use history API instead of window.location for SPA behavior
+      if (window.location.pathname !== '/login') {
+        window.history.pushState({}, '', '/login');
+        // Dispatch a popstate event to notify React Router
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+
+      // Reset flag after a short delay
+      setTimeout(() => {
+        isHandlingLogout = false;
+      }, 1000);
     }
     return Promise.reject(error);
   }

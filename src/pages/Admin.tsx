@@ -212,13 +212,89 @@ const Admin: React.FC = () => {
               <h2 className="text-2xl mb-6">Orders ({orders.length})</h2>
               <div className="space-y-4">
                 {orders.map(order => (
-                  <div key={order.id} className="p-4 bg-[rgba(6,12,26,0.6)] rounded-xl">
-                    <div className="flex justify-between mb-2">
-                      <div className="font-semibold">{order.userName}</div>
-                      <div className="text-[#7cd7ff] font-bold">${order.total.toFixed(2)}</div>
+                  <div key={order.id} className="p-4 bg-[rgba(6,12,26,0.6)] rounded-xl border border-[rgba(124,215,255,0.08)]">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <div className="font-semibold text-lg">{order.userName}</div>
+                        <div className="text-xs text-[rgba(228,235,255,0.5)]">Order #{order.id.slice(0,8)}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[#7cd7ff] font-bold text-lg">${order.total.toFixed(2)}</div>
+                        <div className={`text-xs px-2 py-1 rounded mt-1 ${
+                          order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                          order.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                          order.status === 'closed' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-red-500/20 text-red-400'
+                        }`}>
+                          {order.status}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-[rgba(228,235,255,0.7)]">
-                      {new Date(order.date).toLocaleDateString()} | Status: {order.status} | Items: {order.items.length}
+                    <div className="text-sm text-[rgba(228,235,255,0.7)] mb-3">
+                      <div>{new Date(order.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="mt-1">{order.items.length} item(s)</div>
+                      {order.shippingAddress && (
+                        <div className="mt-2 text-xs bg-[rgba(6,12,26,0.4)] p-2 rounded">
+                          <div className="text-[rgba(228,235,255,0.5)] mb-1">Shipping:</div>
+                          <div className="whitespace-pre-line">{order.shippingAddress}</div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 pt-3 border-t border-[rgba(124,215,255,0.08)]">
+                      {order.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Mark order as completed?`)) {
+                                try {
+                                  await orderService.completeOrder(order.id);
+                                  loadOrders();
+                                } catch (e) { alert('Failed to update order'); }
+                              }
+                            }}
+                            className="px-3 py-1.5 text-sm rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30"
+                          >
+                            Complete Order
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Cancel this order?`)) {
+                                try {
+                                  await orderService.cancelOrder(order.id);
+                                  loadOrders();
+                                } catch (e) { alert('Failed to cancel order'); }
+                              }
+                            }}
+                            className="px-3 py-1.5 text-sm rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                          >
+                            Cancel Order
+                          </button>
+                        </>
+                      )}
+                      {order.status === 'completed' && (
+                        <button
+                          onClick={async () => {
+                            if (confirm(`Close this order (delivery confirmed)?`)) {
+                              try {
+                                await orderService.closeOrder(order.id);
+                                loadOrders();
+                              } catch (e) { alert('Failed to update order'); }
+                            }
+                          }}
+                          className="px-3 py-1.5 text-sm rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30"
+                        >
+                          Close Order
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          const itemsList = order.items.map(i => `- ${i.title} by ${i.author} ($${i.price} × ${i.quantity})`).join('\n');
+                          alert(`Order Details:\n\nCustomer: ${order.userName}\nTotal: $${order.total}\nStatus: ${order.status}\nDate: ${new Date(order.date).toLocaleString()}\n\nItems:\n${itemsList}`);
+                        }}
+                        className="px-3 py-1.5 text-sm rounded-lg bg-[rgba(124,215,255,0.1)] text-[#7cd7ff] border border-[rgba(124,215,255,0.2)] hover:bg-[rgba(124,215,255,0.15)] ml-auto"
+                      >
+                        View Details
+                      </button>
                     </div>
                   </div>
                 ))}

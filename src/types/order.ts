@@ -6,14 +6,6 @@ export interface OrderItem {
   quantity: number;
 }
 
-export interface PaymentInfo {
-  cardNumber: string;
-  cardName: string;
-  expiry: string;
-  cvv: string;
-  address: string;
-}
-
 export interface Order {
   id: string;
   userId: string;
@@ -22,12 +14,13 @@ export interface Order {
   total: number;
   date: string;
   status: string;
-  paymentInfo?: PaymentInfo;
+  paymentProviderId?: string;
+  shippingAddress?: string;
 }
 
 export interface CreateOrderDto {
   userId: string;
   userName: string;
   items: OrderItem[];
-  paymentInfo?: PaymentInfo;
+  shippingAddress?: string;
 }

@@ -68,10 +68,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear state first
+    setCurrentUser(null);
+    // Then clear storage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setCurrentUser(null);
-    navigate('/');
+    // Navigate to home after state is cleared
+    setTimeout(() => {
+      navigate('/login', { replace: true });
+    }, 0);
   };
 
   const getToken = (): string | null => {

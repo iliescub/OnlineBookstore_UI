@@ -10,8 +10,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Cart from './pages/Cart';
 
-// Lazy load Checkout and Admin components
+// Lazy load Checkout, Orders, and Admin components
 const Checkout = React.lazy(() => import('./pages/Checkout'));
+const Orders = React.lazy(() => import('./pages/Orders'));
 const Admin = React.lazy(() => import('./pages/Admin'));
 
 const App: React.FC = () => {
@@ -40,6 +41,14 @@ const App: React.FC = () => {
                     element={
                       <ProtectedRoute>
                         <Checkout />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/orders"
+                    element={
+                      <ProtectedRoute>
+                        <Orders />
                       </ProtectedRoute>
                     }
                   />
