@@ -16,9 +16,9 @@ let isHandlingLogout = false;
 let pendingRequests = 0;
 const loadingListeners = new Set<(isLoading: boolean) => void>();
 
-export const subscribeToLoading = (callback: (isLoading: boolean) => void) => {
+export const subscribeToLoading = (callback: (isLoading: boolean) => void): (() => void) => {
   loadingListeners.add(callback);
-  return () => loadingListeners.delete(callback);
+  return () => { loadingListeners.delete(callback); };
 };
 
 const notifyLoadingState = (isLoading: boolean) => {
